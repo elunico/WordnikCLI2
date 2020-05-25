@@ -3,7 +3,7 @@ from typing import Tuple
 import argparse
 import curses
 from web import get_all_definitions, get_page_source_for_word
-from bufferedscreen import Screen, Color, Invert, Bold, Underline
+from screen import Screen, Color, Invert, Bold, Underline
 
 scr: Screen = None
 
