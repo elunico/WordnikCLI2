@@ -1,18 +1,11 @@
 #!/usr/bin/python3
-from typing import Tuple
+from typing import Tuple, List
 import argparse
 import curses
 from web import get_all_definitions, get_page_source_for_word
 from screen import Screen, Color, Invert, Bold, Underline
 
 scr: Screen = None
-
-
-def curses_end(*args):
-    # for win in args:
-    # win.endwin()
-    scr.getch()
-    curses.endwin()
 
 
 def show_keybindings():
@@ -42,7 +35,8 @@ def show_keybindings():
         defn_screen.nl(2)
         lines += entry_lines
 
-    curses_end(pos_screen, defn_screen)
+    scr.getch()
+    curses.endwin()
 
 
 def parse_args():
@@ -131,7 +125,12 @@ def curses_mainloop(pos_screen: Screen, defn_screen: Screen):
         defn_screen.render()
 
 
-def show_word_defintion(defn: Tuple[str, str], pos_screen: Screen, defn_screen: Screen):
+def show_word_defintion(
+    defn: Tuple[str, str],
+    pos_screen: Screen,
+    defn_screen: Screen
+) -> int:
+
     pos, definition = defn
 
     pos_lines = 0
@@ -178,6 +177,20 @@ def show_requested_word(word):
     scr.add_str(word)
 
 
+def get_dict_entries(word: str, traceback: bool) -> List[Tuple[str, str]]:
+    try:
+        html = get_page_source_for_word(word)
+        dict_entries = get_all_definitions(html)
+    except ConnectionError:
+        if traceback:
+            raise
+        dict_entries = []
+
+    if word == 'potato':
+        dict_entries = [('noun', '❤️')] + dict_entries
+    return dict_entries
+
+
 def main():
     global pos_screen, defn_screen
     options = parse_args()
@@ -185,24 +198,14 @@ def main():
         try:
             show_keybindings()
             return
-        except:
+        except Exception:
             curses.endwin()
             raise
+
+    word = ' '.join(options.word)
+    dict_entries = get_dict_entries(word, options.traceback)
 
     curses_begin()
-    word = ' '.join(options.word)
-    try:
-        html = get_page_source_for_word(word)
-        dict_entries = get_all_definitions(html)
-    except ConnectionError:
-        if options.traceback:
-            curses.endwin()
-            raise
-        dict_entries = []
-
-    if word == 'potato':
-        dict_entries = [('noun', '❤️')] + dict_entries
-
     show_banner()
     show_requested_word(word)
     scr.render()
