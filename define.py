@@ -221,13 +221,10 @@ def main():
         lines = 0
         for entry in dict_entries:
             # try:
-            entry_lines = show_word_defintion(
-                entry, pos_screen, defn_screen)
-            # TODO: what if pos_screen is at the end of a line, doesn't entry_lines + 1 overshoot
-            pos_screen.nl(entry_lines + 1)  # move down for next POS
-            defn_screen.nl(2)  # move down a line for next definition
-            # except curses.error:
-            # break
+            entry_lines = show_word_defintion(entry, pos_screen, defn_screen)
+            pos_screen.nl(entry_lines + 1)
+            defn_screen.nl(2)
+
             lines += entry_lines
 
     curses_mainloop(pos_screen, defn_screen)
