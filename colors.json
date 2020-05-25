@@ -1,0 +1,31 @@
+{
+  "options": [
+    "red",
+    "blue",
+    "green",
+    "magenta",
+    "yellow",
+    "cyan",
+    "black",
+    "white",
+    "this key is ignored. These are here for reference"
+  ],
+  "pairs": {
+    "part-of-speech": {
+      "foreground": "CYAN",
+      "background": "BLACK"
+    },
+    "definition": {
+      "foreground": "YELLOW",
+      "background": "BLACK"
+    },
+    "error": {
+      "background": "BLACK",
+      "foreground": "RED"
+    },
+    "missing-info": {
+      "background": "BLACK",
+      "foreground": "RED"
+    }
+  }
+}
