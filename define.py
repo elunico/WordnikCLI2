@@ -5,9 +5,6 @@ import curses
 from web import get_all_definitions, get_page_source_for_word
 from screen import Screen, Color, Invert, Bold, Underline
 
-scr: Screen = None
-
-
 key_binding_entries = [
     ('<escape>', "exit the program"),
     ('q', 'exit the program'),
@@ -45,23 +42,23 @@ def parse_args():
     return options
 
 
-def curses_begin():
-    global scr
+def curses_begin() -> Screen:
     scr = Screen(curses.initscr(), curses.LINES, curses.COLS)
     curses.noecho()
     scr.win.keypad(1)
     curses.start_color()
     Color.init_color_pairs()
+    return scr
 
 
-def curses_create_subscrs(right_start: int) -> Tuple[Screen, Screen]:
+def curses_create_subscrs(scr: Screen, right_start: int) -> Tuple[Screen, Screen]:
     pos_screen = scr.subwin(curses.LINES-2, right_start, 2, 4)
     defn_screen = scr.subwin(2, 4 + right_start)
     return (Screen(pos_screen, curses.LINES - 2, right_start),
             Screen(defn_screen, curses.LINES - 2, curses.COLS - right_start - 4))
 
 
-def curses_mainloop(pos_screen: Screen, defn_screen: Screen):
+def curses_mainloop(scr: Screen, pos_screen: Screen, defn_screen: Screen):
     while True:
         c = scr.getch()
         if c == 262:
@@ -130,12 +127,12 @@ def show_not_found(pos_screen: Screen, defn_screen: Screen):
     defn_screen.render()
 
 
-def show_banner():
+def show_banner(scr: Screen):
     scr.set_style(Invert())
     scr.add_str('define2 - Command Line Tool - define a word'.center(scr.cols))
 
 
-def show_requested_word(word):
+def show_requested_word(scr: Screen, word: str):
     scr.set_style(Bold())
     scr.add_str(word)
 
@@ -155,7 +152,6 @@ def get_dict_entries(word: str, traceback: bool) -> List[Tuple[str, str]]:
 
 
 def main():
-    global pos_screen, defn_screen
     options = parse_args()
     if options.keybindings:
         word = 'Keybindings'
@@ -164,14 +160,14 @@ def main():
         word = ' '.join(options.word)
         dict_entries = get_dict_entries(word, options.traceback)
 
-    curses_begin()
-    show_banner()
-    show_requested_word(word)
+    scr = curses_begin()
+    show_banner(scr)
+    show_requested_word(scr, word)
     scr.render()
 
     if dict_entries == []:
         rs = len('Error') + 2
-        (pos_screen, defn_screen) = curses_create_subscrs(right_start=rs)
+        (pos_screen, defn_screen) = curses_create_subscrs(scr, right_start=rs)
         show_not_found(pos_screen, defn_screen)
     else:
 
@@ -179,7 +175,7 @@ def main():
             i if i[0] != '' else ('<unknown>', i[1]) for i in dict_entries
         ]
         rs = len(max(dict_entries, key=lambda x: len(x[0]))[0]) + 2
-        (pos_screen, defn_screen) = curses_create_subscrs(right_start=rs)
+        (pos_screen, defn_screen) = curses_create_subscrs(scr, right_start=rs)
         lines = 0
         for entry in dict_entries:
             entry_lines = show_word_defintion(entry, pos_screen, defn_screen)
@@ -188,7 +184,7 @@ def main():
 
             lines += entry_lines
 
-    curses_mainloop(pos_screen, defn_screen)
+    curses_mainloop(scr, pos_screen, defn_screen)
     curses.endwin()
 
 
