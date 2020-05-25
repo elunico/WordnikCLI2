@@ -8,35 +8,17 @@ from screen import Screen, Color, Invert, Bold, Underline
 scr: Screen = None
 
 
-def show_keybindings():
-    curses_begin()
-    show_banner()
-    show_requested_word('Keybindings')
-    scr.render()
-    dict_entries = [
-        ('<escape>', "exit the program"),
-        ('q', 'exit the program'),
-        ('<enter>', 'Move down one line'),
-        ('<down arrow>', 'Move down one line'),
-        ('<up arrow>', "Move up one line"),
-        ('r -> x', "(Press r then press x) Enter debug mode"),
-        ('w', 'Debug mode only: move the left column up one line'),
-        ('e', 'Debug mode only: move the right column up one line'),
-        ('s', 'Debug mode only: move the left column down one line'),
-        ('d', 'Debug mode only: move the right column down one line'),
-    ]
-    rs = len(max(dict_entries, key=lambda x: len(x[0]))[0]) + 2
-    (pos_screen, defn_screen) = curses_create_subscrs(right_start=rs)
-    lines = 0
-    for entry in dict_entries:
-        entry_lines = show_word_defintion(
-            entry, pos_screen, defn_screen)
-        pos_screen.nl(entry_lines + 1)
-        defn_screen.nl(2)
-        lines += entry_lines
-
-    scr.getch()
-    curses.endwin()
+key_binding_entries = [
+    ('<escape>', "exit the program"),
+    ('q', 'exit the program'),
+    ('<enter>', 'Move down one line'),
+    ('<down arrow>', 'Move down one line'),
+    ('<up arrow>', "Move up one line"),
+    ('<page up>', "Move one screen up"),
+    ('<page down>', "Move one screen down"),
+    ('<home>', "Move to the beginning of the definitions"),
+    ('<end>', "Move to the end of the definitions"),
+]
 
 
 def parse_args():
@@ -79,28 +61,9 @@ def curses_create_subscrs(right_start: int) -> Tuple[Screen, Screen]:
             Screen(defn_screen, curses.LINES - 2, curses.COLS - right_start - 4))
 
 
-prev = None
-allow_separate = False
-
-
 def curses_mainloop(pos_screen: Screen, defn_screen: Screen):
-    global allow_separate
-    global prev
     while True:
         c = scr.getch()
-        if c == ord('r'):
-            prev = c
-        if c == ord('x') and prev == ord('r'):
-            allow_separate = True
-        if allow_separate:
-            if c == ord('w'):
-                pos_screen.shift_up()
-            if c == ord('s'):
-                pos_screen.shift_down()
-            if c == ord('e'):
-                defn_screen.shift_up()
-            if c == ord('d'):
-                defn_screen.shift_down()
         if c == 262:
             pos_screen.to_top()
             defn_screen.to_top()
@@ -195,15 +158,11 @@ def main():
     global pos_screen, defn_screen
     options = parse_args()
     if options.keybindings:
-        try:
-            show_keybindings()
-            return
-        except Exception:
-            curses.endwin()
-            raise
-
-    word = ' '.join(options.word)
-    dict_entries = get_dict_entries(word, options.traceback)
+        word = 'Keybindings'
+        dict_entries = key_binding_entries
+    else:
+        word = ' '.join(options.word)
+        dict_entries = get_dict_entries(word, options.traceback)
 
     curses_begin()
     show_banner()
@@ -223,7 +182,6 @@ def main():
         (pos_screen, defn_screen) = curses_create_subscrs(right_start=rs)
         lines = 0
         for entry in dict_entries:
-            # try:
             entry_lines = show_word_defintion(entry, pos_screen, defn_screen)
             pos_screen.nl(entry_lines + 1)
             defn_screen.nl(2)
