@@ -121,21 +121,28 @@ class Screen:
         words = string.split(' ')
         chars = 0
         lines = 1
+        # this is to fix issue #2 on github
+        # normally hitting self.cols requires moving to the next line
+        # but if there is no more words it actually is still only 1 line
+        more_words = True
         for word in words:
             if len(word) + chars == self.cols:
                 self._add_to_buffer(word)
                 chars = 0
                 lines += 1
+                more_words = False
             elif len(word) + chars > self.cols:
                 self._add_to_buffer('\n')
                 self._add_to_buffer(word + ' ')
                 chars = len(word) + 1
                 lines += 1
+                more_words = True
             else:
                 self._add_to_buffer(word + ' ')
                 chars += len(word) + 1
+                more_words = True
         self._update_cache()
-        return lines
+        return lines if more_words else lines - 1
 
     def _transform_buffer(
         self,
