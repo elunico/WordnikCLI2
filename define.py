@@ -170,10 +170,15 @@ def main():
         (pos_screen, defn_screen) = curses_create_subscrs(scr, right_start=rs)
         show_not_found(pos_screen, defn_screen)
     else:
-
+        # this takes the (part-of-speech, defintion) tuples and replaces
+        # empty strings in the part-of-speec with the string <unknown>
         dict_entries = [
             i if i[0] != '' else ('<unknown>', i[1]) for i in dict_entries
         ]
+
+        # this finds the tuple in dict_entries with the longest length
+        # of the string at index 0, then it takes the 0th element of
+        # that tuple, gets its length and adds 2
         rs = len(max(dict_entries, key=lambda x: len(x[0]))[0]) + 2
         (pos_screen, defn_screen) = curses_create_subscrs(scr, right_start=rs)
         lines = 0
