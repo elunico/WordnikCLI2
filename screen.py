@@ -95,6 +95,7 @@ class Screen:
         self.cols = cols
         self.buffer: List[Union[str, TextStyle]] = []
 
+        self.dirty = False
         self.line_cache: List[List[str]] = [[]]
         self.style_cache: Dict[Tuple[int, int], TextStyle] = {}
         self.start_line = 0
@@ -103,8 +104,8 @@ class Screen:
         self.add_str('\n' * count)
 
     def set_style(self, *styles: FontEffect):
+        self.dirty = True
         self.buffer.append(TextStyle(0, styles))
-        self._update_cache()
 
     def _add_to_buffer(self, string: str):
         self.buffer.extend([i for i in string])
@@ -113,11 +114,12 @@ class Screen:
         self.line_cache, self.style_cache = self._transform_buffer(self.buffer)
 
     def add_str(self, string: str):
+        self.dirty = True
         self._add_to_buffer(string)
-        self._update_cache()
         return math.ceil(len(string) / self.cols)
 
     def add_str_wrapped(self, string: str):
+        self.dirty = True
         words = string.split(' ')
         chars = 0
         lines = 1
@@ -141,7 +143,6 @@ class Screen:
                 self._add_to_buffer(word + ' ')
                 chars += len(word) + 1
                 more_words = True
-        self._update_cache()
         return lines if more_words else lines - 1
 
     def _transform_buffer(
@@ -178,6 +179,9 @@ class Screen:
 
     def _text_in_view(self) -> \
             Tuple[List[List[str]], Dict[Tuple[int, int], TextStyle]]:
+        if self.dirty:
+            self._update_cache()
+            self.dirty = False
         return (self.line_cache[self.start_line:self.lines + self.start_line],
                 self.style_cache)
 
