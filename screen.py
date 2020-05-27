@@ -241,6 +241,8 @@ class Screen:
 
     def shift_down(self, amount=1):
         linecnt = len(self.line_cache)
+        if linecnt < self.lines - 1:
+            return
         if self.start_line + amount >= ((linecnt - self.lines) + 1):
             self.start_line = (linecnt - self.lines) + 1
         else:
