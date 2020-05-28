@@ -12,24 +12,10 @@ class FontEffect:
         self.attribute = attribute
 
 
-class Bold(FontEffect):
-    def __init__(self):
-        super().__init__(curses.A_BOLD)
-
-
-class Underline(FontEffect):
-    def __init__(self):
-        super().__init__(curses.A_UNDERLINE)
-
-
-class Invert(FontEffect):
-    def __init__(self):
-        super().__init__(curses.A_STANDOUT)
-
-
-class Plain(FontEffect):
-    def __init__(self):
-        super().__init__(0)
+FontEffect.BOLD = FontEffect(curses.A_BOLD)
+FontEffect.UNDERLINE = FontEffect(curses.A_UNDERLINE)
+FontEffect.INVERT = FontEffect(curses.A_STANDOUT)
+FontEffect.PLAIN = FontEffect(0)
 
 
 def color_constant_for_name(name):

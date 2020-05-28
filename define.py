@@ -3,7 +3,7 @@ from typing import Tuple, List
 import argparse
 import curses
 from web import get_all_definitions, get_page_source_for_word
-from screen import Screen, Color, Invert, Bold, Underline
+from screen import Screen, Color, FontEffect
 
 key_binding_entries = [
     ('<escape>', "exit the program"),
@@ -97,9 +97,9 @@ def show_word_defintion(
     defn_lines = 0
 
     if pos == '<unknown>':
-        pos_screen.set_style(Underline(), Color.named('missing-info'))
+        pos_screen.set_style(FontEffect.UNDERLINE, Color.named('missing-info'))
     else:
-        pos_screen.set_style(Underline(), Color.named('part-of-speech'))
+        pos_screen.set_style(FontEffect.UNDERLINE, Color.named('part-of-speech'))
 
     pos_lines += pos_screen.add_str(pos)
 
@@ -120,7 +120,7 @@ def show_not_found(pos_screen: Screen, defn_screen: Screen):
     defn_screen.add_str_wrapped(
         "Could not find a defition for the given word!")
     defn_screen.nl()
-    defn_screen.set_style(Bold(), Color.named('error'))
+    defn_screen.set_style(FontEffect.BOLD, Color.named('error'))
     defn_screen.add_str_wrapped("Note that Wordnik is case-sensitive")
 
     pos_screen.render()
@@ -128,12 +128,12 @@ def show_not_found(pos_screen: Screen, defn_screen: Screen):
 
 
 def show_banner(scr: Screen):
-    scr.set_style(Invert())
+    scr.set_style(FontEffect.INVERT)
     scr.add_str('define2 - Command Line Tool - define a word'.center(scr.cols))
 
 
 def show_requested_word(scr: Screen, word: str):
-    scr.set_style(Bold())
+    scr.set_style(FontEffect.BOLD)
     scr.add_str(word)
 
 
