@@ -12,20 +12,20 @@
   ],
   "pairs": {
     "part-of-speech": {
-      "foreground": "CYAN",
-      "background": "BLACK"
+      "foreground": "yellow",
+      "background": "black"
     },
     "definition": {
-      "foreground": "YELLOW",
-      "background": "BLACK"
+      "foreground": "cyan",
+      "background": "black"
     },
     "error": {
-      "background": "BLACK",
-      "foreground": "RED"
+      "foreground": "red",
+      "background": "black"
     },
     "missing-info": {
-      "background": "BLACK",
-      "foreground": "RED"
+      "foreground": "red",
+      "background": "black"
     }
   }
 }
