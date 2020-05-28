@@ -151,6 +151,10 @@ def get_dict_entries(word: str, traceback: bool) -> List[Tuple[str, str]]:
     return dict_entries
 
 
+def fix_missing_pos(dict_entries):
+    return [i if i[0] != '' else ('<unknown>', i[1]) for i in dict_entries]
+
+
 def main():
     options = parse_args()
     if options.keybindings:
@@ -172,9 +176,7 @@ def main():
     else:
         # this takes the (part-of-speech, defintion) tuples and replaces
         # empty strings in the part-of-speec with the string <unknown>
-        dict_entries = [
-            i if i[0] != '' else ('<unknown>', i[1]) for i in dict_entries
-        ]
+        dict_entries = fix_missing_pos(dict_entries)
 
         # this finds the tuple in dict_entries with the longest length
         # of the string at index 0, then it takes the 0th element of
