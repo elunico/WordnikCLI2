@@ -47,7 +47,6 @@ class Color(FontEffect):
     @staticmethod
     def init_color_pairs():
         curses.start_color()
-        curses.use_default_colors()
         thisDir = os.path.split(__file__)[:-1]
         with open(os.path.join(*tuple(thisDir), 'colors.json')) as f:
             clrs = json.load(f)['pairs']
@@ -215,7 +214,7 @@ class Screen:
             for char in line:
                 if (lineno, c) in styles:
                     currentAttr = styles[(lineno, c)].attr()
-                self.win.addch(char, currentAttr)
+                self.win.addstr(char, currentAttr)
                 c += 1
             c = 0
             lineno += 1
