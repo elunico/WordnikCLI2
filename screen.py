@@ -34,7 +34,11 @@ class Plain(FontEffect):
 
 def color_constant_for_name(name):
     prop = "COLOR_{}".format(name.upper())
-    return getattr(curses, prop)
+    try:
+        return getattr(curses, prop)
+    except AttributeError:
+        curses.endwin()
+        raise ValueError("colors.json color '{}' is not a valid curses color".format(name))
 
 
 class Color(FontEffect):
